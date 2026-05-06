@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  validate:
+    name: Lint and validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt ruff
+
+      - name: Lint with ruff
+        run: ruff check scripts/ scenarios/ --ignore E501
+
+      - name: Validate scenario turn counts
+        run: |
+          python - <<'EOF'
+          import sys
+          sys.path.insert(0, ".")
+          from scenarios.scenario1_turns import turns as t1
+          from scenarios.scenario2_turns import turns as t2
+          assert len(t1) == 30, f"Scenario 1: expected 30 turns, got {len(t1)}"
+          assert len(t2) == 30, f"Scenario 2: expected 30 turns, got {len(t2)}"
+          for i, turn in enumerate(t1 + t2, 1):
+              assert isinstance(turn, str) and turn.strip(), f"Empty or non-string turn at index {i}"
+          print("Scenario validation passed: 30 turns each, all non-empty strings")
+          EOF
+
+      - name: Validate scores.csv schema
+        run: |
+          python - <<'EOF'
+          import csv
+          from pathlib import Path
+          scores = Path("results/scores.csv")
+          if not scores.exists():
+              print("scores.csv not present — skipping schema check")
+          else:
+              expected = {"model", "scenario", "turn_number", "phase", "pressure_type", "stance_score"}
+              with scores.open() as f:
+                  actual = set(next(csv.reader(f)))
+              assert actual == expected, f"Unexpected columns: {actual}"
+              print(f"scores.csv schema valid: {sorted(expected)}")
+          EOF
