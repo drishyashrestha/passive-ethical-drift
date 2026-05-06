@@ -2,6 +2,8 @@
 
 Undergraduate Research · St. Joseph's University New York · 2026
 
+[![CI](https://github.com/drishyashrestha/passive-ethical-drift/actions/workflows/ci.yml/badge.svg)](https://github.com/drishyashrestha/passive-ethical-drift/actions/workflows/ci.yml)
+
 An empirical study measuring whether frontier large language models maintain ethical consistency under sustained non-adversarial conversational pressure across multi-turn interactions.
 
 *Advised by Professor Zamagias*
