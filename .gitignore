@@ -1,0 +1,26 @@
+# Environment — never commit real keys
+.env
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Raw API outputs are large — untrack if needed, or commit for reproducibility
+# data/raw/
